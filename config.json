@@ -1,0 +1,11 @@
+{
+ "TelegramBotToken": "your tg bot token here",
+ "TgBotIP": "your bot IP or domain here",
+ "TgBotPort": "bot port here always 8443 for SSL",
+ "pip": "postgres db ip here",
+ "pport": "postgres port here",
+ "pdb": "database name here",
+ "plg": "postgres login here",
+ "ppw": "postgres password here",
+ "bapi":"bungie API key here"
+}
