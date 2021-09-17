@@ -20,7 +20,7 @@ var Raids = map[string]string{"VoG": "Vault of Glass\n",
 func Checker(bot structures.BotMessage, cfg structures.Config) {
 	//messageID := bot.Message.MessageId    // bot message ID
 	username := bot.Message.From.Username // chat user name
-	//userID := bot.Message.From.Id         // chat user id
+	userID := bot.Message.From.Id         // chat user id
 	//isbot := bot.Message.From.IsBot       // user are bot? true false
 	chatID := bot.Message.Chat.Id // chat id (if userID=chatID then it's private message)
 	//mesDate := bot.Message.Date           // bot message date
@@ -136,12 +136,14 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			}()
 		}
 	default:
-		go func() {
-			err := Sender("Check command syntax! /help", chatID, cfg)
-			if err != nil {
-				e := structures.MyError{Fun: "json.Unmarshal &botText", Err: "can't decode botText"}
-				log.Fatalln(e.Error())
-			}
-		}()
+		if userID == chatID { //private message
+			go func() {
+				err := Sender("Check command syntax! /help", chatID, cfg)
+				if err != nil {
+					e := structures.MyError{Fun: "json.Unmarshal &botText", Err: "can't decode botText"}
+					log.Fatalln(e.Error())
+				}
+			}()
+		}
 	}
 }
