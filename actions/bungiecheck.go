@@ -10,12 +10,11 @@ import (
 	"strings"
 )
 
-var bPlayer structures.BungoSearch
-var bAnswer structures.BungoAnswer
-var bRaid structures.RaidAnswer
-var cnormal, chard, cgg int
-
 func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
+	var bPlayer structures.BungoSearch
+	var bAnswer structures.BungoAnswer
+	var bRaid structures.RaidAnswer
+	var cnormal, chard, cgg int
 	nck := u
 	if !t {
 		return u //user not registered in DB
@@ -70,17 +69,17 @@ func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
 					log.Fatalln(e.Error())
 				}
 				for i := range bAnswer.Response.Activities {
-					req, err := http.NewRequest("GET", "https://www.bungie.net/Platform/Destiny2/Manifest/DestinyActivityDefinition/"+strconv.FormatInt(bAnswer.Response.Activities[i].ActivityHash, 10), nil)
+					reqs, err := http.NewRequest("GET", "https://www.bungie.net/Platform/Destiny2/Manifest/DestinyActivityDefinition/"+strconv.FormatInt(bAnswer.Response.Activities[i].ActivityHash, 10), nil)
 					if err != nil {
 						log.Fatalln(err)
 					}
-					req.Header.Set("X-API-Key", cfg.Bapi)
-					res, err := client.Do(req)
+					reqs.Header.Set("X-API-Key", cfg.Bapi)
+					resq, err := client.Do(reqs)
 					if err != nil {
 						log.Fatalln(err)
 					}
-					body, err := ioutil.ReadAll(res.Body)
-					err = json.Unmarshal(body, &bRaid)
+					bodys, err := ioutil.ReadAll(resq.Body)
+					err = json.Unmarshal(bodys, &bRaid)
 					if err != nil {
 						e := structures.MyError{Fun: "bungiecheck json.Unmarshal &bRaid", Err: "can't decode bRaid answer"}
 						log.Fatalln(e.Error())

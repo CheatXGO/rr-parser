@@ -109,18 +109,6 @@ type BungoAnswer struct {
 	} `json:"response"`
 }
 
-type JsonData struct {
-	ActivityHash struct {
-		OriginalDisplayProperties struct {
-			Name string `json:"name"`
-		} `json:"originalDisplayProperties"`
-		Tier        int `json:"tier"`
-		Matchmaking struct {
-			RequiresGuardianOath bool `json:"requiresGuardianOath"`
-		} `json:"matchmaking"`
-	}
-}
-
 type RaidAnswer struct {
 	Response struct {
 		OriginalDisplayProperties struct {
