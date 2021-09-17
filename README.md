@@ -10,9 +10,9 @@ To use that, you need to do some simple steps:
 6. Compile and run :)
 
 Bot commands:
-**/rr** - check player stats (format: **/rr raid nickname**)
-**/reg** - register your Destiny 2 nickname to your tg profile (format: **/reg destiny2_nickname**)
-**/upd** - update your registered Destiny 2 nickname (format: **/upd destiny2_nickname**)
-**/my** - check your stats (format: **/my raid**). Only for registered users.
-**/lists** - raids abbreviation
-**/help** - commands and raids abbreviation
+1. **/rr** - check player stats (format: **/rr raid nickname**)
+2. **/reg** - register your Destiny 2 nickname to your tg profile (format: **/reg destiny2_nickname**)
+3. **/upd** - update your registered Destiny 2 nickname (format: **/upd destiny2_nickname**)
+4. **/my** - check your stats (format: **/my raid**). Only for registered users.
+5. **/lists** - raids abbreviation
+6. **/help** - commands and raids abbreviation
