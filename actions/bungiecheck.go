@@ -8,13 +8,22 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 )
 
+var mu sync.Mutex
+
 func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
+	var wg sync.WaitGroup
 	var bPlayer structures.BungoSearch
 	var bAnswer structures.BungoAnswer
-	var bRaid structures.RaidAnswer
 	var cnormal, chard, cgg int
+	cnch := make(chan int)
+	chch := make(chan int)
+	cggch := make(chan int)
+	defer close(cnch)
+	defer close(chch)
+	defer close(cggch)
 	nck := u
 	if !t {
 		return u //user not registered in DB
@@ -69,41 +78,58 @@ func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
 					log.Fatalln(e.Error())
 				}
 				for i := range bAnswer.Response.Activities {
-					reqs, err := http.NewRequest("GET", "https://www.bungie.net/Platform/Destiny2/Manifest/DestinyActivityDefinition/"+strconv.FormatInt(bAnswer.Response.Activities[i].ActivityHash, 10), nil)
-					if err != nil {
-						log.Fatalln(err)
-					}
-					reqs.Header.Set("X-API-Key", cfg.Bapi)
-					resq, err := client.Do(reqs)
-					if err != nil {
-						log.Fatalln(err)
-					}
-					bodys, err := ioutil.ReadAll(resq.Body)
-					err = json.Unmarshal(bodys, &bRaid)
-					if err != nil {
-						e := structures.MyError{Fun: "bungiecheck json.Unmarshal &bRaid", Err: "can't decode bRaid answer"}
-						log.Fatalln(e.Error())
-					}
-					for key, val := range raids {
-						if val == strings.ToLower(bRaid.Response.OriginalDisplayProperties.Name) {
-							if key == strings.ToLower(usercommand) {
-								if bRaid.Response.Matchmaking.RequiresGuardianOath == false {
-									if bRaid.Response.Tier == 0 {
-										cnormal = cnormal + bAnswer.Response.Activities[i].Values.Clears
-									} else {
-										chard = chard + bAnswer.Response.Activities[i].Values.Clears
-									}
-								} else {
-									cgg = cgg + bAnswer.Response.Activities[i].Values.Clears
-								}
-							}
-						}
-					}
+					println(bAnswer.Response.Activities[i].ActivityHash)
+					wg.Add(1)
+					go fastquery(&wg, client, cfg, raids, bAnswer.Response.Activities[i].ActivityHash, bAnswer.Response.Activities[i].Values.Clears, usercommand, cnch, chch, cggch)
 				}
+
+				println(len(bAnswer.Response.Activities))
+				for range bAnswer.Response.Activities {
+					cnormal = cnormal + <-cnch
+					chard = chard + <-chch
+					cgg = cgg + <-cggch
+				}
+				wg.Wait()
 			}
 		} else {
 			return "Please fill right raid abbreviation after /my"
 		}
 	}
 	return nck + " " + usercommand + " N: " + strconv.Itoa(cnormal) + " H: " + strconv.Itoa(chard) + " G: " + strconv.Itoa(cgg)
+}
+
+func fastquery(wg *sync.WaitGroup, client *http.Client, cfg structures.Config, raids map[string]string, i int64, j int, usercommand string, cnch, chch, cggch chan int) {
+	var bRaid structures.RaidAnswer
+	defer wg.Done()
+	reqs, err := http.NewRequest("GET", "https://www.bungie.net/Platform/Destiny2/Manifest/DestinyActivityDefinition/"+strconv.FormatInt(i, 10), nil)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	reqs.Header.Set("X-API-Key", cfg.Bapi)
+	resq, err := client.Do(reqs)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	bodys, err := ioutil.ReadAll(resq.Body)
+	err = json.Unmarshal(bodys, &bRaid)
+	if err != nil {
+		e := structures.MyError{Fun: "bungiecheck json.Unmarshal &bRaid", Err: "can't decode bRaid answer"}
+		log.Fatalln(e.Error())
+	}
+	for key, val := range raids {
+		if val == strings.ToLower(bRaid.Response.OriginalDisplayProperties.Name) {
+			if key == strings.ToLower(usercommand) {
+				if bRaid.Response.Matchmaking.RequiresGuardianOath == false {
+					if bRaid.Response.Tier == 0 {
+						cnch <- j
+					} else {
+						chch <- j
+					}
+				} else {
+					cggch <- j
+				}
+			}
+		}
+	}
+	println(bRaid.Response.OriginalDisplayProperties.Name)
 }
