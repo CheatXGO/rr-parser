@@ -21,9 +21,11 @@ func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
 	cnch := make(chan int)
 	chch := make(chan int)
 	cggch := make(chan int)
+	cquit := make(chan struct{})
 	defer close(cnch)
 	defer close(chch)
 	defer close(cggch)
+	defer close(cquit)
 	nck := u
 	if !t {
 		return u //user not registered in DB
@@ -78,18 +80,25 @@ func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
 					log.Fatalln(e.Error())
 				}
 				for i := range bAnswer.Response.Activities {
-					println(bAnswer.Response.Activities[i].ActivityHash)
 					wg.Add(1)
 					go fastquery(&wg, client, cfg, raids, bAnswer.Response.Activities[i].ActivityHash, bAnswer.Response.Activities[i].Values.Clears, usercommand, cnch, chch, cggch)
 				}
-
-				println(len(bAnswer.Response.Activities))
-				for range bAnswer.Response.Activities {
-					cnormal = cnormal + <-cnch
-					chard = chard + <-chch
-					cgg = cgg + <-cggch
+				go func(wg *sync.WaitGroup, cquit chan struct{}) {
+					wg.Wait()
+					cquit <- struct{}{}
+				}(&wg, cquit)
+				for {
+					select {
+					case c1 := <-cnch:
+						cnormal = cnormal + c1
+					case c2 := <-chch:
+						chard = chard + c2
+					case c3 := <-cggch:
+						cgg = cgg + c3
+					case <-cquit:
+						break
+					}
 				}
-				wg.Wait()
 			}
 		} else {
 			return "Please fill right raid abbreviation after /my"
@@ -131,5 +140,4 @@ func fastquery(wg *sync.WaitGroup, client *http.Client, cfg structures.Config, r
 			}
 		}
 	}
-	println(bRaid.Response.OriginalDisplayProperties.Name)
 }
