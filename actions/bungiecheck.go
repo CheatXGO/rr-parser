@@ -11,8 +11,6 @@ import (
 	"sync"
 )
 
-var mu sync.Mutex
-
 func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
 	var wg sync.WaitGroup
 	var bPlayer structures.BungoSearch

@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  tg-bot:
+    build: ./
+    command: ./main
+    ports:
+      - "5432:5432"
+      - "8443:8443"
+    restart: always
