@@ -15,7 +15,8 @@ var Raids = map[string]string{"VoG": "Vault of Glass\n",
 	"SotP": "Scourge of the Past\n",
 	"SoS":  "Leviathan, Spire of Stars\n",
 	"EoW":  "Leviathan, Eater of Worlds\n",
-	"Levi": "Leviathan\n"}
+	"Levi": "Leviathan\n",
+	"VotD": "Vow of the Disciple\n"}
 
 func Checker(bot structures.BotMessage, cfg structures.Config) {
 	//messageID := bot.Message.MessageId    // bot message ID
