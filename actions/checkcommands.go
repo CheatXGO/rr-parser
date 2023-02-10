@@ -29,6 +29,12 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 	//mesDate := bot.Message.Date           // bot message date
 	//userText := bot.Message.Text          // text from user
 	usercommand := strings.Split(bot.Message.Text, " ")
+	// process nicknames with whitespaces
+	if len(usercommand) > 3 {
+		usercommand[2] = strings.Join(usercommand[2:], " ")
+		usercommand = usercommand[:3]
+	}
+
 	switch strings.ToLower(usercommand[0]) {
 	case "/help":
 		text := "rr - check player stats (format: /rr raid nickname)\n\n" +
@@ -66,9 +72,9 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			}
 		}()
 	case "/rr":
-		if cap(usercommand) >= 3 && usercommand[1] != "" {
+		if len(usercommand) == 3 && usercommand[1] != "" {
 			go func() {
-				err := Sender(CheckStats(usercommand[1], usercommand[2], true, cfg), chatID, cfg)
+				err := Sender(CheckStats(usercommand[1], usercommand[2], true, cfg, 0), chatID, cfg)
 				if err != nil {
 					e := structures.MyError{Func: "/rr CheckStats", Err: "can't resolve Bungie answer"}
 					log.Fatalln(e.Error())
@@ -84,10 +90,10 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			}()
 		}
 	case "/my":
-		if cap(usercommand) >= 2 && usercommand[1] != "" {
+		if len(usercommand) == 2 && usercommand[1] != "" {
 			go func() {
 				res, bol := database.Dblookup(bot, cfg)
-				err := Sender(CheckStats(usercommand[1], res, bol, cfg), chatID, cfg)
+				err := Sender(CheckStats(usercommand[1], res, bol, cfg, 0), chatID, cfg)
 				if err != nil {
 					e := structures.MyError{Func: "/my CheckStats", Err: "can't resolve Bungie answer"}
 					log.Fatalln(e.Error())
@@ -103,7 +109,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			}()
 		}
 	case "/reg":
-		if cap(usercommand) >= 2 && usercommand[1] != "" {
+		if len(usercommand) == 2 && usercommand[1] != "" {
 			go func() {
 				err := Sender(database.Dbinsert(usercommand[1], bot, cfg), chatID, cfg)
 				if err != nil {
@@ -121,7 +127,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			}()
 		}
 	case "/upd":
-		if cap(usercommand) >= 2 && usercommand[1] != "" {
+		if len(usercommand) == 2 && usercommand[1] != "" {
 			go func() {
 				err := Sender(database.Dbupdate(usercommand[1], bot, cfg), chatID, cfg)
 				if err != nil {
