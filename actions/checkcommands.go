@@ -2,9 +2,10 @@ package actions
 
 import (
 	"log"
-	"main/database"
-	"main/structures"
 	"strings"
+
+	"github.com/CheatXGO/rr-parser/database"
+	"github.com/CheatXGO/rr-parser/structures"
 )
 
 var Raids = map[string]string{"VoG": "Vault of Glass\n",
@@ -39,7 +40,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 		go func() {
 			err := Sender(text, chatID, cfg)
 			if err != nil {
-				e := structures.MyError{Fun: "/help", Err: "can't send commands"}
+				e := structures.MyError{Func: "/help", Err: "can't send commands"}
 				log.Fatalln(e.Error())
 			}
 		}()
@@ -48,7 +49,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 		go func() {
 			err := Sender(text, chatID, cfg)
 			if err != nil {
-				e := structures.MyError{Fun: "/start", Err: "can't send commands"}
+				e := structures.MyError{Func: "/start", Err: "can't send commands"}
 				log.Fatalln(e.Error())
 			}
 		}()
@@ -60,7 +61,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 		go func() {
 			err := Sender(text, chatID, cfg)
 			if err != nil {
-				e := structures.MyError{Fun: "/lists", Err: "can't send commands"}
+				e := structures.MyError{Func: "/lists", Err: "can't send commands"}
 				log.Fatalln(e.Error())
 			}
 		}()
@@ -69,7 +70,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			go func() {
 				err := Sender(CheckStats(usercommand[1], usercommand[2], true, cfg), chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "/rr CheckStats", Err: "can't resolve Bungie answer"}
+					e := structures.MyError{Func: "/rr CheckStats", Err: "can't resolve Bungie answer"}
 					log.Fatalln(e.Error())
 				}
 			}()
@@ -77,7 +78,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			go func() {
 				err := Sender("Please fill right raid and D2 nickname after /rr", chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "/rr Sender", Err: "can't send commands"}
+					e := structures.MyError{Func: "/rr Sender", Err: "can't send commands"}
 					log.Fatalln(e.Error())
 				}
 			}()
@@ -88,7 +89,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 				res, bol := database.Dblookup(bot, cfg)
 				err := Sender(CheckStats(usercommand[1], res, bol, cfg), chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "/my CheckStats", Err: "can't resolve Bungie answer"}
+					e := structures.MyError{Func: "/my CheckStats", Err: "can't resolve Bungie answer"}
 					log.Fatalln(e.Error())
 				}
 			}()
@@ -96,7 +97,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			go func() {
 				err := Sender("Please fill right raid abbreviation after /my", chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "/my Sender", Err: "can't send commands"}
+					e := structures.MyError{Func: "/my Sender", Err: "can't send commands"}
 					log.Fatalln(e.Error())
 				}
 			}()
@@ -106,7 +107,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			go func() {
 				err := Sender(database.Dbinsert(usercommand[1], bot, cfg), chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "/reg Sender", Err: "can't create DB record"}
+					e := structures.MyError{Func: "/reg Sender", Err: "can't create DB record"}
 					log.Fatalln(e.Error())
 				}
 			}()
@@ -114,7 +115,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			go func() {
 				err := Sender("Please fill Destiny 2 nickname after /reg", chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "/reg Sender", Err: "can't send commands"}
+					e := structures.MyError{Func: "/reg Sender", Err: "can't send commands"}
 					log.Fatalln(e.Error())
 				}
 			}()
@@ -124,7 +125,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			go func() {
 				err := Sender(database.Dbupdate(usercommand[1], bot, cfg), chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "/upd Sender", Err: "can't update DB record"}
+					e := structures.MyError{Func: "/upd Sender", Err: "can't update DB record"}
 					log.Fatalln(e.Error())
 				}
 			}()
@@ -132,7 +133,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			go func() {
 				err := Sender("Please fill Destiny 2 nickname after /upd for change", chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "/upd Sender", Err: "can't send commands"}
+					e := structures.MyError{Func: "/upd Sender", Err: "can't send commands"}
 					log.Fatalln(e.Error())
 				}
 			}()
@@ -142,7 +143,7 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			go func() {
 				err := Sender("Check command syntax! /help", chatID, cfg)
 				if err != nil {
-					e := structures.MyError{Fun: "json.Unmarshal &botText", Err: "can't decode botText"}
+					e := structures.MyError{Func: "json.Unmarshal &botText", Err: "can't decode botText"}
 					log.Fatalln(e.Error())
 				}
 			}()

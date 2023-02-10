@@ -3,12 +3,12 @@ package structures
 import "fmt"
 
 type MyError struct {
-	Err string
-	Fun string
+	Err  string
+	Func string
 }
 
 func (e *MyError) Error() string {
-	return fmt.Sprintf("Func: %s Error: %s", e.Fun, e.Err)
+	return fmt.Sprintf("Func: %s Error: %s", e.Func, e.Err)
 }
 
 type Config struct { // for data from config.json

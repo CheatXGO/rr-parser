@@ -2,13 +2,14 @@ package actions
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
-	"main/structures"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/CheatXGO/rr-parser/structures"
 )
 
 func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
@@ -44,10 +45,10 @@ func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		err = json.Unmarshal(body, &bPlayer)
 		if err != nil {
-			e := structures.MyError{Fun: "bungiecheck json.Unmarshal &bPlayer", Err: "can't decode bPlayer answer"}
+			e := structures.MyError{Func: "bungiecheck json.Unmarshal &bPlayer", Err: "can't decode bPlayer answer"}
 			log.Fatalln(e.Error())
 		}
 		if len(bPlayer.Response.SearchResults) == 0 {
@@ -71,10 +72,10 @@ func CheckStats(usercommand, u string, t bool, cfg structures.Config) string {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			body, err = ioutil.ReadAll(res.Body)
+			body, err = io.ReadAll(res.Body)
 			err = json.Unmarshal(body, &bAnswer)
 			if err != nil {
-				e := structures.MyError{Fun: "bungiecheck json.Unmarshal &bPlayer", Err: "can't decode bPlayer answer"}
+				e := structures.MyError{Func: "bungiecheck json.Unmarshal &bPlayer", Err: "can't decode bPlayer answer"}
 				log.Fatalln(e.Error())
 			}
 			for i := range bAnswer.Response.Activities {
@@ -116,10 +117,10 @@ func fastquery(wg *sync.WaitGroup, client *http.Client, cfg structures.Config, r
 	if err != nil {
 		log.Fatalln(err)
 	}
-	bodys, err := ioutil.ReadAll(resq.Body)
+	bodys, err := io.ReadAll(resq.Body)
 	err = json.Unmarshal(bodys, &bRaid)
 	if err != nil {
-		e := structures.MyError{Fun: "bungiecheck json.Unmarshal &bRaid", Err: "can't decode bRaid answer"}
+		e := structures.MyError{Func: "bungiecheck json.Unmarshal &bRaid", Err: "can't decode bRaid answer"}
 		log.Fatalln(e.Error())
 	}
 	for key, val := range raids {
