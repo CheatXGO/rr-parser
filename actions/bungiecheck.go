@@ -160,7 +160,7 @@ func fastquery(wg *sync.WaitGroup, client *http.Client, cfg structures.Config, r
 		if val == strings.ToLower(bRaid.Response.OriginalDisplayProperties.Name) {
 			if key == strings.ToLower(usercommand) {
 				if bRaid.Response.Matchmaking.RequiresGuardianOath == false {
-					if bRaid.Response.Tier == 0 {
+					if bRaid.Response.Tier == 0 && bRaid.Response.DisplayProperties.Name != "King's Fall: Master" {
 						cnch <- j
 					} else {
 						chch <- j

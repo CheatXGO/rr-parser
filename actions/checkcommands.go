@@ -109,6 +109,11 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			}()
 		}
 	case "/reg":
+		// process nicknames with whitespaces
+		if len(usercommand) > 2 {
+			usercommand[1] = strings.Join(usercommand[1:], " ")
+			usercommand = usercommand[:2]
+		}
 		if len(usercommand) == 2 && usercommand[1] != "" {
 			go func() {
 				err := Sender(database.Dbinsert(usercommand[1], bot, cfg), chatID, cfg)
@@ -127,6 +132,11 @@ func Checker(bot structures.BotMessage, cfg structures.Config) {
 			}()
 		}
 	case "/upd":
+		// process nicknames with whitespaces
+		if len(usercommand) > 2 {
+			usercommand[1] = strings.Join(usercommand[1:], " ")
+			usercommand = usercommand[:2]
+		}
 		if len(usercommand) == 2 && usercommand[1] != "" {
 			go func() {
 				err := Sender(database.Dbupdate(usercommand[1], bot, cfg), chatID, cfg)

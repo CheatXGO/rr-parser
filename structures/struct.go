@@ -111,6 +111,9 @@ type BungoAnswer struct {
 
 type RaidAnswer struct {
 	Response struct {
+		DisplayProperties struct {
+			Name string `json:"name"`
+		} `json:"displayProperties"`
 		OriginalDisplayProperties struct {
 			Name string `json:"name"`
 		} `json:"originalDisplayProperties"`
